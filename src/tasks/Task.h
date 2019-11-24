@@ -13,18 +13,20 @@ struct TaskAtom {
         sw = 0;
         done = 0;
         empty = 1;
+        elapsed = 0;
     }
     uint8_t type:3;
     uint8_t sensor:3;
     uint8_t greater:1;
     uint8_t on:1;
-    uint8_t holdTime{0};
-    uint8_t targetTemp{0};
     uint8_t sw:3;
     uint8_t sw_on:1;
     uint8_t empty:1;
     uint8_t reserved:2;
     uint8_t done:1;
+    uint8_t elapsed{0};
+    uint8_t holdTime{0};
+    uint8_t targetTemp{0};
 };
 
 class Task {
@@ -80,6 +82,10 @@ public:
 
     inline void stop() {
         m_startMillis = 0;
+    }
+
+    inline uint8_t elapsed() {
+        return m_atom.elapsed;
     }
 
     void setTargetTempC(uint8_t tempC);
