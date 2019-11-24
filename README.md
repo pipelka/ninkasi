@@ -1,0 +1,2 @@
+# ninkasi
+an ancient goddess
