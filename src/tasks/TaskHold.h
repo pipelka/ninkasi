@@ -10,7 +10,4 @@ public:
     void loop();
 
     uint8_t remaining() override;
-private:
-
-    uint8_t m_elapsed{0};
 };

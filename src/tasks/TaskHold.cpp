@@ -17,14 +17,14 @@ void TaskHold::begin() {
 void TaskHold::loop() {
     Task::loop();
 
-    if(m_elapsed >= m_atom.holdTime) {
+    if(m_atom.elapsed >= m_atom.holdTime) {
         switchOn(!m_atom.on, true);
         m_atom.done = true;
         return;
     }
 
     if(millisSinceStart() >= 60 * 1000) {
-        m_elapsed++;
+        m_atom.elapsed++;
         Task::begin();
     }
 
@@ -43,5 +43,5 @@ void TaskHold::loop() {
 }
 
 uint8_t TaskHold::remaining() {
-    return m_atom.holdTime - m_elapsed;
+    return m_atom.holdTime - m_atom.elapsed;
 }
