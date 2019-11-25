@@ -11,11 +11,20 @@ TaskHold* TaskHold::hold(uint8_t sensorIndex, uint8_t temp, uint8_t minutes, boo
 void TaskHold::begin() {
     Task::begin();
 
+    if(m_atom.holdTime == 0) {
+        m_atom.done = true;
+        return;
+    }
+
     switchOn(!m_atom.on, true);
 }
 
 void TaskHold::loop() {
     Task::loop();
+
+    if(m_atom.done) {
+        return;
+    }
 
     if(m_atom.elapsed >= m_atom.holdTime) {
         switchOn(!m_atom.on, true);
