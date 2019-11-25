@@ -1,0 +1,17 @@
+name: CI
+
+on: [push]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: installing PlatformIO
+      run: |
+        pip install -U platformio
+        platformio update
+    - name: Build firmware
+      run: |
+        platformio run
