@@ -31,6 +31,7 @@
 #define VPIN_TEMP2              V102
 
 #define VPIN_STEP_SELECTOR      V111
-#define VPIN_START_BTN          V112
+#define VPIN_START_MASH_BTN     V112
 #define VPIN_TARGET_TEMP        V113
 #define VPIN_REMAINING_TIME     V114
+#define VPIN_START_BOIL_BTN     V115
