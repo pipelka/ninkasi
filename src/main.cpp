@@ -5,12 +5,13 @@
 #include <WiFiManager.h>
 
 #include <Arduino.h>
+#include <ArduinoOTA.h>
 #include <OneWire.h>
 #include <Ticker.h> 
 
 #include "RelayBus.h"
 #include "SensorBus.h"
-#include "tasks/TaskMachine.h"
+#include "Ninkasi.h"
 #include "vpins.h"
 
 // PIN DEFINITIOMS
@@ -23,7 +24,7 @@
 RelayBus relayBus(PIN_RELAIS_RX, PIN_RELAIS_TX);
 OneWire oneWire(PIN_ONEWIRE);
 SensorBus sensors(&oneWire);
-TaskMachine M(4, &sensors, &relayBus);
+Ninkasi ninkasi(&sensors, &relayBus);
 BlynkTimer timer;
 Ticker timerLed;
 WiFiManager wifiManager;
@@ -31,6 +32,9 @@ WiFiManager wifiManager;
 // WiFi AP credentials.
 char ssid[] = "ninkasi";
 char pass[] = "ninkasi";
+
+// Hostname needed by ArduinoOTA
+const char* hostname = "ninkasi";
 
 // Blynk Project Settings
 char auth[] = "2e265805660d4814842adf80ccd7690a";
@@ -51,21 +55,22 @@ BLYNK_WRITE_DEFAULT() {
   if(request.pin >= VPIN_MASH_TEMP_STEP1 && request.pin <= VPIN_MASH_TIME_STEP6) {
       uint8_t value = (uint8_t)param.asInt();
       uint8_t step = request.pin / 2;
-      uint8_t pos = step * 2;
       bool duration = (request.pin % 2 == 1);
 
-      for(uint8_t q = 0; q < 2; q++) {
-        Task* taskRamp = M.Q(q)[pos];
-        Task* taskHold = M.Q(q)[pos + 1];
-
-        if(duration) {
-          taskHold->setHoldTime(value);
-        }
-        else {
-          taskRamp->setTargetTempC(value);
-          taskHold->setTargetTempC(value);
-        }
+      if(duration) {
+        ninkasi.setMashStep(step, -1, value);
       }
+      else {
+        ninkasi.setMashStep(step, value);
+      }
+  }
+
+  // boil
+  if(request.pin == VPIN_BOIL_TEMP) {
+    ninkasi.setBoil(param.asInt(), -1);
+  }
+  else if(request.pin == VPIN_BOIL_DURATION) {
+    ninkasi.setBoil(-1, param.asInt());
   }
 
   // manual relay switches
@@ -81,34 +86,51 @@ BLYNK_WRITE_DEFAULT() {
   }
 };
 
-BLYNK_READ(VPIN_START_BTN) {
-  Blynk.virtualWrite(VPIN_START_BTN, M.running() ? 1 : 0);
+BLYNK_READ(VPIN_START_MASH_BTN) {
+  Blynk.virtualWrite(VPIN_START_MASH_BTN, ninkasi.mashRunning() ? 1 : 0);
 }
 
-BLYNK_WRITE(VPIN_START_BTN) {
+BLYNK_WRITE(VPIN_START_MASH_BTN) {
   bool on = (param.asInt() == 1);
 
   if(on) {
-    M.start();
+    Blynk.virtualWrite(VPIN_START_BOIL_BTN, 0);
+    ninkasi.startMash();
   }
   else {
-    M.stop();
+    ninkasi.stop();
+  }
+}
+
+BLYNK_READ(VPIN_START_BOIL_BTN) {
+  Blynk.virtualWrite(VPIN_START_BOIL_BTN, ninkasi.boilRunning() ? 1 : 0);
+}
+
+BLYNK_WRITE(VPIN_START_BOIL_BTN) {
+  bool on = (param.asInt() == 1);
+
+  if(on) {
+    Blynk.virtualWrite(VPIN_START_MASH_BTN, 0);
+    ninkasi.startBoil();
+  }
+  else {
+    ninkasi.stop();
   }
 }
 
 void sendBlynkData() {
-  Blynk.virtualWrite(VPIN_START_BTN, M.running());
+  Blynk.virtualWrite(VPIN_START_MASH_BTN, ninkasi.mashRunning());
+  Blynk.virtualWrite(VPIN_START_BOIL_BTN, ninkasi.boilRunning());
 
-  Blynk.virtualWrite(VPIN_TEMP1, M.getTempC(0));
-  Blynk.virtualWrite(VPIN_TEMP2, M.getTempC(1));
-  Blynk.virtualWrite(VPIN_TARGET_TEMP, M.getTargetTempC());
+  Blynk.virtualWrite(VPIN_TEMP1, sensors.getTemp(0, true));
+  Blynk.virtualWrite(VPIN_TEMP2, sensors.getTemp(1, true));
 
-  auto t = M.getRemainingTime();
-  Blynk.virtualWrite(VPIN_REMAINING_TIME, t);
+  Blynk.virtualWrite(VPIN_TARGET_TEMP, ninkasi.getTargetTempC());
+  Blynk.virtualWrite(VPIN_REMAINING_TIME, ninkasi.getRemainingTime());
 }
 
 void statusLed() {
-  if(!M.running()) {
+  if(!ninkasi.running()) {
     digitalWrite(PIN_LED, LOW);
   }
   else {
@@ -125,15 +147,10 @@ void setup() {
   wifiManager.autoConnect(ssid, pass);
   Blynk.config(auth, domain, port);
 
-  M.begin();
+  ArduinoOTA.setHostname(hostname);
+  ArduinoOTA.begin();
 
-  for(int i = 0; i < 6; i++) {
-    uint8_t pos =  i* 2;
-    M.Q(0).setTask<TaskRamp>(pos)->ramp(0);
-    M.Q(0).setTask<TaskHold>(pos + 1)->hold(0);
-    M.Q(1).setTask<TaskRamp>(pos)->ramp(0);
-    M.Q(1).setTask<TaskHold>(pos + 1)->hold(0);
-  }
+  ninkasi.begin();
 
   timer.setInterval(5000L, sendBlynkData);
 
@@ -141,7 +158,13 @@ void setup() {
 }
 
 void loop() {
+  // handle Blynk
   Blynk.run();
   timer.run();
-  M.loop();
+
+  // handle ninkasi
+  ninkasi.loop();
+
+  // handle OTA
+  ArduinoOTA.handle();
 }
