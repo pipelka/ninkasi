@@ -12,8 +12,7 @@ TaskQueue::~TaskQueue() {
 
 void TaskQueue::clear() {
     for(int i = 0; i < 12; i++) {
-        delete m_tasks[i];
-        m_tasks[i] = nullptr;
+        m_tasks[i]->clear();
     }
 }
 
