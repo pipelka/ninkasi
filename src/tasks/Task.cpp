@@ -16,6 +16,12 @@ void Task::loop() {
     }
 }
 
+void Task::clear() {
+    m_atom.done = false;
+    m_atom.elapsed = 0;
+    m_startMillis = 0;
+}
+
 uint32_t Task::millisSinceStart() {
     return millis() - m_startMillis;
 }

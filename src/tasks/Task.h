@@ -40,6 +40,8 @@ public:
 
     virtual void loop();
 
+    virtual void clear();
+
     uint32_t millisSinceStart();
 
     inline uint8_t type() {
