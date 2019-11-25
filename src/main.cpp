@@ -28,6 +28,10 @@ Ninkasi ninkasi(&sensors, &relayBus);
 BlynkTimer timer;
 Ticker timerLed;
 WiFiManager wifiManager;
+WidgetLED ledRunning(VPIN_RUNNING);
+WidgetLED ledHeating(VPIN_HEATING);
+WidgetLED ledImpeller(VPIN_IMPELLER);
+WidgetLED ledPump(VPIN_PUMP);
 
 // WiFi AP credentials.
 char ssid[] = "ninkasi";
@@ -118,9 +122,20 @@ BLYNK_WRITE(VPIN_START_BOIL_BTN) {
   }
 }
 
+BLYNK_READ(VPIN_RUNNING) {
+  ledRunning.setValue(ninkasi.running());
+}
+
 void sendBlynkData() {
   Blynk.virtualWrite(VPIN_START_MASH_BTN, ninkasi.mashRunning());
   Blynk.virtualWrite(VPIN_START_BOIL_BTN, ninkasi.boilRunning());
+
+  if(ninkasi.running()) {
+    ledRunning.on();
+  }
+  else {
+    ledRunning.off();
+  }
 
   Blynk.virtualWrite(VPIN_TEMP1, sensors.getTemp(0, true));
   Blynk.virtualWrite(VPIN_TEMP2, sensors.getTemp(1, true));
