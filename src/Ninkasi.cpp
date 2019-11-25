@@ -66,18 +66,26 @@ void Ninkasi::setBoil(float temp, uint8_t duration) {
 }
 
 void Ninkasi::startMash() {
-    m_boil.stop();
+    if(boilRunning()) {
+        m_boil.stop();
+    }
     m_mash.start();
 }
 
 void Ninkasi::startBoil() {
-    m_mash.stop();
+    if(mashRunning()) {
+        m_mash.stop();
+    }
     m_boil.start();
 }
 
 void Ninkasi::stop() {
-    m_mash.stop();
-    m_boil.stop();
+    if(mashRunning()) {
+        m_mash.stop();
+    }
+    if(boilRunning()) {
+        m_boil.stop();
+    }
 }
 
 float Ninkasi::getTargetTempC() {
