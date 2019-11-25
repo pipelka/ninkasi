@@ -35,3 +35,8 @@
 #define VPIN_TARGET_TEMP        V113
 #define VPIN_REMAINING_TIME     V114
 #define VPIN_START_BOIL_BTN     V115
+#define VPIN_RUNNING            V116
+#define VPIN_HEATING            V117
+#define VPIN_IMPELLER           V118
+#define VPIN_PUMP               V119
+
