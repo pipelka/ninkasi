@@ -10,7 +10,7 @@ jobs:
     steps:
     - name: installing PlatformIO
       run: |
-        pip install -U platformio
+        pip install platformio
         platformio update
     - name: Build firmware
       run: |
