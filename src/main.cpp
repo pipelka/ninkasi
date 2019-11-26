@@ -125,7 +125,7 @@ BLYNK_WRITE_DEFAULT() {
     }
   }
 
-  if(request.pin == VPIN_BTN_HEATING) {
+  if(request.pin == VPIN_BTN_PUMP) {
     if(param.asInt() == 0) {
       relayBus.delSingle(bit(RELAY_PUMP));
     }
