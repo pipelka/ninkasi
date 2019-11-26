@@ -25,6 +25,11 @@ public:
         return m_boil.running();
     }
 
+
+    bool isHeating();
+
+    bool isImpellerRunning();
+
     void startMash();
 
     void startBoil();

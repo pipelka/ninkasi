@@ -111,3 +111,13 @@ uint8_t Ninkasi::getRemainingTime() {
 
     return 0;
 }
+
+bool Ninkasi::isHeating() {
+    uint8_t d = m_relay->getCache();
+    return d & 1;
+}
+
+bool Ninkasi::isImpellerRunning() {
+    uint8_t d = m_relay->getCache();
+    return d & 2;
+}
