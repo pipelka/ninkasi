@@ -22,6 +22,11 @@
 #define VPIN_BOIL_DURATION      V21
 #define VPIN_BOIL_WHIRLPOOL     V22
 
+#define VPIN_BTN_HEATING        V26
+#define VPIN_BTN_AUX            V27
+#define VPIN_BTN_IMPELLER       V28
+#define VPIN_BTN_PUMP           V29
+
 #define VPIN_RELAY_MAN1         V30
 #define VPIN_RELAY_MAN2         V31
 #define VPIN_RELAY_MAN3         V32
@@ -35,8 +40,8 @@
 #define VPIN_TARGET_TEMP        V113
 #define VPIN_REMAINING_TIME     V114
 #define VPIN_START_BOIL_BTN     V115
-#define VPIN_RUNNING            V116
-#define VPIN_HEATING            V117
-#define VPIN_IMPELLER           V118
-#define VPIN_PUMP               V119
+#define VPIN_LED_RUNNING        V116
+#define VPIN_LED_HEATING        V117
+#define VPIN_LED_IMPELLER       V118
+#define VPIN_LED_PUMP           V119
 
