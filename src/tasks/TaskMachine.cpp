@@ -42,8 +42,6 @@ void TaskMachine::begin() {
         ESP.reset();
     }
 
-    m_relais->setPort(255);
-    delay(1000);
     m_relais->setPort(0);
 }
 
