@@ -52,12 +52,22 @@ bool RelayBus::setup() {
 
 bool RelayBus::getPort(uint8_t& data, uint8_t addr) {
     LOG("GETPORT %i", addr);
-    return get(2, data, addr);
+    if(!get(2, data, addr)) {
+        return false;
+    }
+
+    setCache(data, addr);
+    return true;
 }
 
 bool RelayBus::setPort(uint8_t data, uint8_t addr) {
     LOG("SETPORT %i, %i", data, addr);
-    return set(3, data, addr);
+    if(!set(3, data, addr)) {
+        return false;
+    }
+
+    setCache(data, addr);
+    return true;
 }
 
 bool RelayBus::getOption(uint8_t& data, uint8_t addr) {
@@ -72,12 +82,26 @@ bool RelayBus::setOption(uint8_t data, uint8_t addr) {
 
 bool RelayBus::setSingle(uint8_t data, uint8_t addr) {
     LOG("SETSINGLE %i, %i", data, addr);
-    return set(6, data, addr);
+    if(!set(6, data, addr)) {
+        return false;
+    }
+
+    uint8_t d = getCache(addr);
+    setCache(d | data, addr);
+
+    return true;
 }
 
 bool RelayBus::delSingle(uint8_t data, uint8_t addr) {
     LOG("DELSINGLE %i, %i", data, addr);
-    return set(7, data, addr);
+    if(!set(7, data, addr)) {
+        return false;
+    }
+
+    uint8_t d = getCache(addr);
+    setCache(d & (data ^ 0xFF), addr);
+
+    return true;
 }
 
 bool RelayBus::toggle(uint8_t data, uint8_t addr) {
@@ -178,6 +202,26 @@ bool RelayBus::set(uint8_t cmd, uint8_t data, uint8_t addr) {
 
     Frame response{};
     return receiveResponse(cmd, response);
+}
+
+uint8_t RelayBus::getCache(uint8_t addr) {
+    if(addr < 1 || addr > sizeof(m_portCache)) {
+        return 0;
+    }
+
+    return m_portCache[addr - 1];
+}
+
+void RelayBus::setCache(uint8_t data, uint8_t addr) {
+    if(addr < 1 || addr > sizeof(m_portCache)) {
+        return;
+    }
+
+    m_portCache[addr - 1] = data;
+}
+
+bool RelayBus::isRelayOn(uint8_t relay) {
+    return ((getCache() & bit(relay)) == bit(relay));
 }
 
 void RelayBus::relaisTest() {

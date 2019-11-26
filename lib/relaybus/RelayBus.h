@@ -28,7 +28,11 @@ public:
     bool toggle(uint8_t data, uint8_t addr = 1);
 
     void relaisTest();
-    
+
+    uint8_t getCache(uint8_t addr = 1);
+
+    bool isRelayOn(uint8_t relay);
+
 protected:
 
     typedef uint8_t Frame[4];
@@ -41,9 +45,13 @@ protected:
 
     bool set(uint8_t cmd, uint8_t data, uint8_t addr);
 
+    void setCache(uint8_t data, uint8_t addr = 1);
+
 private:
 
     int m_deviceCount{0};
+
+    uint8_t m_portCache[8]{0};
 
     SoftwareSerial m_serial;
 };
