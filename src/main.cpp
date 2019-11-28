@@ -26,6 +26,12 @@
 #define RELAY_AUX 2
 #define RELAY_PUMP 3
 
+#define BLYNK_GREEN     "#23C48E"
+#define BLYNK_BLUE      "#04C0F8"
+#define BLYNK_YELLOW    "#ED9D00"
+#define BLYNK_RED       "#D3435C"
+#define BLYNK_DARK_BLUE "#5F7CD8"
+
 RelayBus relayBus(PIN_RELAIS_RX, PIN_RELAIS_TX);
 OneWire oneWire(PIN_ONEWIRE);
 SensorBus sensors(&oneWire);
@@ -37,6 +43,8 @@ WidgetLED ledRunning(VPIN_LED_RUNNING);
 WidgetLED ledHeating(VPIN_LED_HEATING);
 WidgetLED ledImpeller(VPIN_LED_IMPELLER);
 WidgetLED ledPump(VPIN_LED_PUMP);
+
+uint32_t millisResetBtn = 0;
 
 // WiFi AP credentials.
 char ssid[] = "ninkasi";
@@ -163,6 +171,20 @@ BLYNK_WRITE(VPIN_START_BOIL_BTN) {
   updateBlynkLedAndButtonStatus();
 }
 
+BLYNK_WRITE(VPIN_RESET_BTN) {
+  // start reset counter (5000 ms)
+  if(param.asInt() == 1 && millisResetBtn == 0) {
+    millisResetBtn = millis();
+  }
+
+  // button released
+
+  if(param.asInt() == 0) {
+    Blynk.setProperty(VPIN_RESET_BTN, "onBackColor", BLYNK_YELLOW);
+    millisResetBtn = 0;
+  }
+}
+
 void updateBlynkLedAndButtonStatus() {
   Blynk.virtualWrite(VPIN_START_MASH_BTN, ninkasi.mashRunning());
   Blynk.virtualWrite(VPIN_START_BOIL_BTN, ninkasi.boilRunning());
@@ -249,4 +271,11 @@ void loop() {
 
   // handle OTA
   ArduinoOTA.handle();
+
+  // check reset button
+  if(millisResetBtn != 0 && millis() - millisResetBtn >= 5000) {
+    millisResetBtn = 0;
+    Blynk.setProperty(VPIN_RESET_BTN, "onBackColor", BLYNK_GREEN);
+    ninkasi.reset();
+  }
 }
