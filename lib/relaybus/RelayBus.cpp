@@ -13,7 +13,7 @@
 #define LOG(...)
 #endif
 
-RelayBus::RelayBus(int rx, int tx) : m_serial(rx, tx, false) {
+RelayBus::RelayBus(int rx, int tx) : m_serial(rx, tx) {
 }
 
 bool RelayBus::setup() {
