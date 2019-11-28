@@ -44,4 +44,4 @@
 #define VPIN_LED_HEATING        V117
 #define VPIN_LED_IMPELLER       V118
 #define VPIN_LED_PUMP           V119
-
+#define VPIN_RESET_BTN          V120
