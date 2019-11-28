@@ -35,9 +35,9 @@ public:
         return m_running;
     }
 
-private:
-
     void clear();
+
+private:
 
     SensorBus* m_sensors;
     RelayBus* m_relais;
