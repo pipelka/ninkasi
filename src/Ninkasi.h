@@ -44,6 +44,8 @@ public:
 
     uint8_t getRemainingTime();
     
+    void reset();
+
 private:
 
     SensorBus* m_sensors;

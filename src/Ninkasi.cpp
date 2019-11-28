@@ -121,3 +121,9 @@ bool Ninkasi::isImpellerRunning() {
     uint8_t d = m_relay->getCache();
     return d & 2;
 }
+
+void Ninkasi::reset() {
+    stop();
+    m_mash.clear();
+    m_boil.clear();
+}
