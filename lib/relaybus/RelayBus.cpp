@@ -139,16 +139,9 @@ bool RelayBus::receiveResponse(uint8_t cmd, Frame frame, bool ignoreError) {
         delay(100);
     }
 
-    // no response
-    /*if(m_serial.available() == 0) {
-        LOG("TIMEOUT NO RESPONSE");
-        return false;
-    }*/
-
     // read response frame
     for(unsigned int i = 0; i < sizeof(Frame); i++) {
         int c = m_serial.read();
-        delay(4);
         
         if(c == -1) {
             LOG("ERROR: READING RESPONSE");
