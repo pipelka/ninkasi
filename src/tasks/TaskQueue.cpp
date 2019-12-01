@@ -77,3 +77,21 @@ bool TaskQueue::loop() {
     t->loop();
     return true;
 }
+
+void TaskQueue::setSwitchRelay(uint8_t sw) {
+    for(int i = 0; i < 12; i++) {
+        Task* t = m_tasks[i];
+        if(t != nullptr) {
+            t->m_atom.sw = sw;
+        }
+    }
+}
+
+void TaskQueue::setSensorIndex(uint8_t index) {
+    for(int i = 0; i < 12; i++) {
+        Task* t = m_tasks[i];
+        if(t != nullptr) {
+            t->m_atom.sensor = index;
+        }
+    }
+}

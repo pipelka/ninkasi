@@ -34,6 +34,10 @@ public:
 
     Task* findNextTask();
 
+    void setSwitchRelay(uint8_t sw);
+
+    void setSensorIndex(uint8_t index);
+
 protected:
 
     void clear();
