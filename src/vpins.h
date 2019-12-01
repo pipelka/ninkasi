@@ -52,3 +52,7 @@
 #define RELAY_HEATING 1
 #define RELAY_AUX 2
 #define RELAY_PUMP 3
+#define RELAY_MAN1 4
+#define RELAY_MAN2 5
+#define RELAY_MAN3 6
+#define RELAY_MAN4 7
