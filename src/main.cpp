@@ -136,6 +136,16 @@ BLYNK_WRITE_DEFAULT() {
       relayBus.setSingle(bit(RELAY_PUMP));
     }
   }
+
+  // set boil output switch
+  if(request.pin == VPIN_BOIL_OUTLET) {
+    ninkasi.setBoilSwitchRelay(param.asInt());
+  }
+
+  // set boil temp sensor index
+  if(request.pin == VPIN_BOIL_TEMP_PROBE) {
+    ninkasi.setBoilSensorIndex(param.asInt() - 1);
+  }
 };
 
 BLYNK_WRITE(VPIN_START_MASH_BTN) {
