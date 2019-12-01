@@ -209,36 +209,36 @@ BLYNK_WRITE(VPIN_RESET_BTN) {
   }
 }
 
+void sendRelayStatus(uint8_t pin, uint8_t relay, WidgetLED* led = nullptr) {
+  bool on = relayBus.isRelayOn(relay);
+  Blynk.virtualWrite(pin, on ? 1 : 0);
+
+  if(led == nullptr) {
+    return;
+  }
+
+  if(on) {
+    led->on();
+  }
+  else {
+    led->off();
+  }
+}
+
 void updateBlynkLedAndButtonStatus() {
+  // mash / boil running state
   Blynk.virtualWrite(VPIN_START_MASH_BTN, ninkasi.mashRunning());
   Blynk.virtualWrite(VPIN_START_BOIL_BTN, ninkasi.boilRunning());
-  
-  if(relayBus.isRelayOn(RELAY_IMPELLER)) {
-    Blynk.virtualWrite(VPIN_BTN_IMPELLER, 1);
-    ledImpeller.on();
-  }
-  else {
-    Blynk.virtualWrite(VPIN_BTN_IMPELLER, 0);
-    ledImpeller.off();
-  }
 
-  if(relayBus.isRelayOn(RELAY_HEATING)) {
-    Blynk.virtualWrite(VPIN_BTN_HEATING, 1);
-    ledHeating.on();
-  }
-  else {
-    Blynk.virtualWrite(VPIN_BTN_HEATING, 0);
-    ledHeating.off();
-  }
+  sendRelayStatus(VPIN_BTN_HEATING, RELAY_HEATING, &ledHeating);
+  sendRelayStatus(VPIN_BTN_IMPELLER, RELAY_IMPELLER, &ledImpeller);
+  sendRelayStatus(VPIN_BTN_AUX, RELAY_AUX);
+  sendRelayStatus(VPIN_BTN_PUMP, RELAY_PUMP, &ledPump);
 
-  if(relayBus.isRelayOn(RELAY_PUMP)) {
-    Blynk.virtualWrite(VPIN_BTN_PUMP, 1);
-    ledPump.on();
-  }
-  else {
-    Blynk.virtualWrite(VPIN_BTN_PUMP, 0);
-    ledPump.off();
-  }
+  sendRelayStatus(VPIN_RELAY_MAN1, RELAY_MAN1);
+  sendRelayStatus(VPIN_RELAY_MAN2, RELAY_MAN2);
+  sendRelayStatus(VPIN_RELAY_MAN3, RELAY_MAN3);
+  sendRelayStatus(VPIN_RELAY_MAN4, RELAY_MAN4);
 
   if(ninkasi.running()) {
     ledRunning.on();
