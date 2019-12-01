@@ -11,4 +11,9 @@ public:
     void loop();
 
     void setHoldTime(uint8_t minutes) override;
+
+protected:
+
+    bool isTempReached();
+
 };

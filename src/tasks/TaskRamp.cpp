@@ -9,28 +9,43 @@ TaskRamp* TaskRamp::ramp(uint8_t sensorIndex, uint8_t targetTempC, bool on, bool
     return this;
 }
 
+bool TaskRamp::isTempReached() {
+    // check if we reached the target temperature
+    float temp = m_sensors->getTemp(m_atom.sensor);
+
+    if(m_atom.greater == 1 && temp >= (m_atom.targetTemp - 0.5)) {
+        return true;
+    }
+
+    if(m_atom.greater == 0 && temp <= m_atom.targetTemp) {
+        return true;
+    }
+
+    return false;
+}
+
 void TaskRamp::begin() {
     Task::begin();
 
-    if(m_atom.on == 1) {
-        m_relay->setSingle(1 << m_atom.sw);
-    }
-    else {
-        m_relay->delSingle(1 << m_atom.sw);
+    if(!isTempReached()) {
+        switchOn(m_atom.on, true);
     }
 }
 
 void TaskRamp::loop() {
     Task::loop();
 
-    // check if we reached the target temperature
-    float temp = m_sensors->getTemp(m_atom.sensor);
-
-    if(m_atom.greater == 1 && temp >= (m_atom.targetTemp - 0.5)) {
-        m_atom.done = 1;
+    // skip if we're done
+    if(m_atom.done) {
+        return;
     }
-    if(m_atom.greater == 0 && temp <= m_atom.targetTemp) {
-        m_atom.done = 1;
+
+    // we're done where temp is reached
+    m_atom.done = isTempReached() ? 1 : 0;
+
+    // switch off when done
+    if(m_atom.done) {
+        switchOn(!m_atom.on, true);
     }
 }
 
