@@ -32,7 +32,7 @@ void Ninkasi::loop() {
     m_boil.loop();
 }
 
-void Ninkasi::setMashStep(uint8_t step, float temp, uint8_t duration) {
+void Ninkasi::setMashStep(uint8_t step, float temp, int duration) {
     uint8_t pos = step * 2;
 
     for(uint8_t q = 0; q < 2; q++) {
@@ -50,12 +50,12 @@ void Ninkasi::setMashStep(uint8_t step, float temp, uint8_t duration) {
     }
 }
 
-void Ninkasi::setBoil(float temp, uint8_t duration) {
-    if(duration > -1) {
+void Ninkasi::setBoil(float temp, int duration) {
+    if(duration != -1) {
         m_boil.Q(RELAY_HEATING)[1]->setHoldTime(duration);
     }
 
-    if(temp > -1) {
+    if(temp != -1) {
         m_boil.Q(RELAY_HEATING)[0]->setTargetTempC(temp);
         m_boil.Q(RELAY_HEATING)[1]->setTargetTempC(temp);
     }

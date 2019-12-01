@@ -13,9 +13,9 @@ public:
 
     void loop();
 
-    void setMashStep(uint8_t step, float temp, uint8_t duration = -1);
+    void setMashStep(uint8_t step, float temp, int duration = -1);
 
-    void setBoil(float temp, uint8_t duration = -1);
+    void setBoil(float temp, int duration = -1);
 
     inline bool mashRunning() {
         return m_mash.running();
