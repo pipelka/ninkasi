@@ -95,7 +95,7 @@ float TaskMachine::getTempC(uint8_t index) {
 }
 
 uint8_t TaskMachine::getTargetTempC() {
-    Task* t = Q(0).findNextTask();
+    Task* t = Q(1).findNextTask();
 
     if(t == nullptr) {
         return 0;
@@ -105,7 +105,7 @@ uint8_t TaskMachine::getTargetTempC() {
 }
 
 uint8_t TaskMachine::getRemainingTime()  {
-    Task* t = Q(0).findNextTask();
+    Task* t = Q(1).findNextTask();
 
     if(t == nullptr) {
         return 0;
