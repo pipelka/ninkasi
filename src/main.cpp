@@ -21,11 +21,6 @@
 #define PIN_ONEWIRE 5 // D1
 #define PIN_LED 0 // D3
 
-#define RELAY_IMPELLER 0
-#define RELAY_HEATING 1
-#define RELAY_AUX 2
-#define RELAY_PUMP 3
-
 #define BLYNK_GREEN     "#23C48E"
 #define BLYNK_BLUE      "#04C0F8"
 #define BLYNK_YELLOW    "#ED9D00"

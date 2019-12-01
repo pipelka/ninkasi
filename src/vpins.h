@@ -1,5 +1,4 @@
 #pragma once
-#include <BlynkSimpleEsp8266.h>
 
 /**
  * Brewmachine Blynk VPIN assignment
@@ -17,6 +16,9 @@
 #define VPIN_MASH_TIME_STEP5    V9
 #define VPIN_MASH_TEMP_STEP6    V10
 #define VPIN_MASH_TIME_STEP6    V11
+
+#define VPIN_BOIL_OUTLET        V15
+#define VPIN_BOIL_TEMP_PROBE    V16
 
 #define VPIN_BOIL_TEMP          V20
 #define VPIN_BOIL_DURATION      V21
@@ -45,3 +47,8 @@
 #define VPIN_LED_IMPELLER       V118
 #define VPIN_LED_PUMP           V119
 #define VPIN_RESET_BTN          V120
+
+#define RELAY_IMPELLER 0
+#define RELAY_HEATING 1
+#define RELAY_AUX 2
+#define RELAY_PUMP 3
