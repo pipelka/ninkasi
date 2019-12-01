@@ -20,34 +20,38 @@ bool RelayBus::setup() {
     LOG("SETUP");
     m_serial.begin(19200);
 
-    while(m_serial.available()) {
-        m_serial.read();
-        delay(4);
-    }
+    flush();
 
     for(int i = 0; i < 4; i++) {
         m_serial.write((char)1);
         delay(10);
-        if(m_serial.available() > 3) {
+        if(m_serial.available()) {
             break;
         }
     }
 
-    Frame response{};
-
-    if(!receiveResponse(1, response)) {
+    if(!receiveResponse(1)) {
         return false;
     }
 
-    while(receiveResponse(1, response, true)) {
-        if(response[0] == 1) {
-            m_deviceCount = response[1] -1;
+    while(receiveResponse(1, true)) {
+        if(m_frame[0] == 1) {
+            m_deviceCount = m_frame[1] -1;
             break;
         }
     }
 
     setPort(0);
     return m_deviceCount != 0;
+}
+
+void RelayBus::flush() {
+    m_serial.flush();
+
+    while(m_serial.available()) {
+        m_serial.read();
+        delay(4);
+    }
 }
 
 bool RelayBus::getPort(uint8_t& data, uint8_t addr) {
@@ -110,63 +114,94 @@ bool RelayBus::toggle(uint8_t data, uint8_t addr) {
 }
 
 bool RelayBus::sendFrame(uint8_t cmd, uint8_t data, uint8_t addr) {
+    // flush receive buffer
+    flush();
+
     uint8_t checksum = ((cmd ^ addr) ^ data);
     LOG(">> SEND (%i, %i, %i, %i)", cmd, addr, data, checksum);
 
     // assemble frame
-    Frame frame; //{cmd, addr, data, checksum};
-
-    frame[0] = cmd;
-    frame[1] = addr;
-    frame[2] = data;
-    frame[3] = checksum;
+    m_frame[0] = cmd;
+    m_frame[1] = addr;
+    m_frame[2] = data;
+    m_frame[3] = checksum;
 
     size_t written = 0;
+    size_t count = 0;
+
     // write frame
-    for(size_t i = 0; i < sizeof(frame); i++) {
-        written += m_serial.write(frame[i]);
-    }
-    LOG("%i bytes written", (int)written);
-
-    return written == sizeof(frame);
-}
-
-bool RelayBus::receiveResponse(uint8_t cmd, Frame frame, bool ignoreError) {
-    LOG("WAIT FOR RESPONSE");
-
-    // wait for response
-    for(int i = 0; i < 10 && m_serial.available() != 4; i++) {
-        delay(100);
-    }
-
-    // read response frame
-    for(unsigned int i = 0; i < sizeof(Frame); i++) {
-        int c = m_serial.read();
-        
-        if(c == -1) {
-            LOG("ERROR: READING RESPONSE");
+    while(written < sizeof(m_frame)) {
+        // there is a command response waiting ?
+        // something wrong is going on here -> exit
+        if(m_serial.available() != 0) {
             return false;
         }
 
-        frame[i] = (uint8_t)c & 0xFF;
+        // write byte of frame
+        if(m_serial.write(m_frame[written]) == 1) {        
+            written++;
+            continue;
+        }
+
+        // retried 50 times to write -> exit
+        if(count == 50) {
+            return false;
+        }
+
+        // failed to write -> wait and retry
+        delay(4);
+        count++;
     }
 
-    LOG("<< RECV(%i, %i, %i, %i)", frame[0], frame[1], frame[2], frame[3]);
+    return true;
+}
+
+bool RelayBus::receiveResponse(uint8_t cmd, bool ignoreError) {
+    LOG("WAIT FOR RESPONSE");
+
+    // wait for response
+    for(int i = 0; i < 10 && m_serial.available() <= 0; i++) {
+        delay(100);
+    }
+
+    if(m_serial.available() <= 0) {
+        return false;
+    }
+
+    // read response frame
+    size_t i = 0;
+    while(i < sizeof(Frame)) {
+        if(m_serial.available() <= 0) {
+            return false;
+        }
+
+        int c = m_serial.read();
+
+        if(c == -1) {
+            delay(10);
+            continue;
+        }
+
+        m_frame[i] = (uint8_t)c & 0xFF;
+        i++;
+    }
+
+    LOG("<< RECV(%i, %i, %i, %i)", m_frame[0], m_frame[1], m_frame[2], m_frame[3]);
 
     if(ignoreError) {
         return true;
     }
 
     // response cmd
-    if(frame[0] != (cmd ^ 0xFF)) {
+    if(m_frame[0] != (cmd ^ 0xFF)) {
         LOG("ERROR: WRONG COMMAND IN RESPONSE");
         return false;
     }
 
     // checksum of response
-    uint8_t checkSum = frame[0] ^ frame[1] ^ frame[2];
+    uint8_t checkSum = m_frame[0] ^ m_frame[1] ^ m_frame[2];
 
-    if(checkSum == frame[3]) {
+    if(checkSum == m_frame[3]) {
         LOG("OK");
         return true;
     }
@@ -180,12 +215,11 @@ bool RelayBus::get(uint8_t cmd, uint8_t& data, uint8_t addr) {
         return false;
     }
 
-    Frame response{};
-    if(!receiveResponse(cmd, response)) {
+    if(!receiveResponse(cmd)) {
         return false;
     }
 
-    return response[2];
+    return m_frame[2];
 }
 
 bool RelayBus::set(uint8_t cmd, uint8_t data, uint8_t addr) {
@@ -193,8 +227,7 @@ bool RelayBus::set(uint8_t cmd, uint8_t data, uint8_t addr) {
         return false;
     }
 
-    Frame response{};
-    return receiveResponse(cmd, response);
+    return receiveResponse(cmd);
 }
 
 uint8_t RelayBus::getCache(uint8_t addr) {

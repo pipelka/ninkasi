@@ -33,13 +33,15 @@ public:
 
     bool isRelayOn(uint8_t relay);
 
+    void flush();
+
 protected:
 
     typedef uint8_t Frame[4];
 
     bool sendFrame(uint8_t cmd, uint8_t data, uint8_t addr = 1);
 
-    bool receiveResponse(uint8_t cmd, Frame frame, bool ignoreError = false);
+    bool receiveResponse(uint8_t cmd, bool ignoreError = false);
 
     bool get(uint8_t cmd, uint8_t& data, uint8_t addr);
 
@@ -48,6 +50,8 @@ protected:
     void setCache(uint8_t data, uint8_t addr = 1);
 
 private:
+
+    Frame m_frame{0};
 
     int m_deviceCount{0};
 
