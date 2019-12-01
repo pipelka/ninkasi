@@ -25,10 +25,13 @@ public:
         return m_boil.running();
     }
 
-
     bool isHeating();
 
     bool isImpellerRunning();
+
+    void setBoilSwitchRelay(uint8_t sw);
+
+    void setBoilSensorIndex(uint8_t index);
 
     void startMash();
 

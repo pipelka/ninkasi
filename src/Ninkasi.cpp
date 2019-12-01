@@ -1,4 +1,5 @@
 #include "Ninkasi.h"
+#include "vpins.h"
 
 Ninkasi::Ninkasi(SensorBus* sensors, RelayBus* relay) : 
 m_sensors(sensors), 
@@ -19,9 +20,7 @@ void Ninkasi::begin() {
         m_mash.Q(1).setTask<TaskHold>(pos + 1)->hold(0);
     }
 
-    m_boil.Q(0).setTask<TaskRamp>(0)->ramp(0);
     m_boil.Q(1).setTask<TaskRamp>(0)->ramp(0);
-    m_boil.Q(0).setTask<TaskHold>(1)->hold(0);
     m_boil.Q(1).setTask<TaskHold>(1)->hold(0);
 
     m_mash.begin();
@@ -53,16 +52,21 @@ void Ninkasi::setMashStep(uint8_t step, float temp, uint8_t duration) {
 
 void Ninkasi::setBoil(float temp, uint8_t duration) {
     if(duration > -1) {
-        m_boil.Q(0)[1]->setHoldTime(duration);
-        m_boil.Q(1)[1]->setHoldTime(duration);
-        m_boil.Q(0)[1]->setTargetTempC(duration);
-        m_boil.Q(1)[1]->setTargetTempC(duration);
+        m_boil.Q(RELAY_HEATING)[1]->setHoldTime(duration);
     }
 
     if(temp > -1) {
-        m_boil.Q(0)[0]->setTargetTempC(temp);
-        m_boil.Q(1)[0]->setTargetTempC(temp);
+        m_boil.Q(RELAY_HEATING)[0]->setTargetTempC(temp);
+        m_boil.Q(RELAY_HEATING)[1]->setTargetTempC(temp);
     }
+}
+
+void Ninkasi::setBoilSwitchRelay(uint8_t sw) {
+    m_boil.Q(RELAY_HEATING).setSwitchRelay(sw);
+}
+
+void Ninkasi::setBoilSensorIndex(uint8_t index) {
+    m_boil.Q(RELAY_HEATING).setSensorIndex(index);
 }
 
 void Ninkasi::startMash() {
