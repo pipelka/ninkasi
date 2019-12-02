@@ -3,7 +3,7 @@
 #include <ESP8266WiFi.h>
 #include <BlynkSimpleEsp8266.h>
 #include <WiFiManager.h>
-#include <EEPROM.h>
+#include <EEPROM_Rotate.h>
 
 #include <Arduino.h>
 #include <ArduinoOTA.h>
@@ -28,6 +28,7 @@
 #define BLYNK_RED       "#D3435C"
 #define BLYNK_DARK_BLUE "#5F7CD8"
 
+EEPROM_Rotate EEPROM;
 RelayBus relayBus(PIN_RELAIS_RX, PIN_RELAIS_TX);
 OneWire oneWire(PIN_ONEWIRE);
 SensorBus sensors(&oneWire);
@@ -285,9 +286,19 @@ void serialize(bool force) {
 
 void setup() {
   Serial.begin(115200);
+  pinMode(PIN_LED, OUTPUT);
+  digitalWrite(PIN_LED, HIGH);
+
+  wifiManager.autoConnect(ssid, pass);
+  Blynk.config(auth, domain, port);
+
+  ArduinoOTA.setHostname(hostname);
+  ArduinoOTA.begin();
+
   ninkasi.begin();
 
   // read EEPROM data
+  EEPROM.size(10);
   EEPROM.begin(512);
   uint8_t v = 0;
   EEPROM.get(0, v);
@@ -299,18 +310,9 @@ void setup() {
     ninkasi.deserialize(1);
   }
  
-  pinMode(PIN_LED, OUTPUT);
-  digitalWrite(PIN_LED, HIGH);
-
-  wifiManager.autoConnect(ssid, pass);
-  Blynk.config(auth, domain, port);
-
-  ArduinoOTA.setHostname(hostname);
-  ArduinoOTA.begin();
-
   timer.setInterval(3000L, sendBlynkData);
   timerLed.attach(0.5, statusLed);
-  timerSerialize.attach(30, serialize, false);
+  timerSerialize.attach(10, serialize, false);
 }
 
 void loop() {

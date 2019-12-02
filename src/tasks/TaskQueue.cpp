@@ -1,5 +1,7 @@
 #include "TaskQueue.h"
-#include <EEPROM.h>
+#include <EEPROM_Rotate.h>
+
+extern EEPROM_Rotate EEPROM;
 
 TaskQueue::TaskQueue(uint8_t sw, SensorBus* sensors, RelayBus* relay) {
     m_sw = sw;

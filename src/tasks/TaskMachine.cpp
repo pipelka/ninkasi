@@ -1,5 +1,7 @@
 #include "TaskMachine.h"
-#include <EEPROM.h>
+#include <EEPROM_Rotate.h>
+
+extern EEPROM_Rotate EEPROM;
 
 TaskMachine::TaskMachine(uint8_t queueCount, SensorBus* sensors, RelayBus* relais) : m_timer(500), m_queueCount(queueCount) {
     m_queue = new TaskQueue*[m_queueCount];

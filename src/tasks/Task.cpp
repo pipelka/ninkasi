@@ -1,5 +1,7 @@
 #include "Task.h"
-#include <EEPROM.h>
+#include <EEPROM_Rotate.h>
+
+extern EEPROM_Rotate EEPROM;
 
 void Task::begin() {
     m_startMillis = millis();

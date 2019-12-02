@@ -1,6 +1,8 @@
 #include "Ninkasi.h"
 #include "vpins.h"
-#include <EEPROM.h>
+#include <EEPROM_Rotate.h>
+
+extern EEPROM_Rotate EEPROM;
 
 Ninkasi::Ninkasi(SensorBus* sensors, RelayBus* relay) : 
 m_sensors(sensors), 
