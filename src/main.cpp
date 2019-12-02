@@ -34,6 +34,7 @@ SensorBus sensors(&oneWire);
 Ninkasi ninkasi(&sensors, &relayBus);
 BlynkTimer timer;
 Ticker timerLed;
+Ticker timerSerialize;
 WiFiManager wifiManager;
 WidgetLED ledRunning(VPIN_LED_RUNNING);
 WidgetLED ledHeating(VPIN_LED_HEATING);
@@ -56,6 +57,7 @@ const char* domain = "192.168.16.10";
 uint16_t port = 8080;
 
 void updateBlynkLedAndButtonStatus();
+void serialize();
 
 
 BLYNK_CONNECTED() {
@@ -181,6 +183,7 @@ BLYNK_WRITE(VPIN_START_MASH_BTN) {
   }
 
   updateBlynkLedAndButtonStatus();
+  serialize();
 }
 
 BLYNK_WRITE(VPIN_START_BOIL_BTN) {
@@ -195,6 +198,7 @@ BLYNK_WRITE(VPIN_START_BOIL_BTN) {
   }
 
   updateBlynkLedAndButtonStatus();
+  serialize();
 }
 
 BLYNK_WRITE(VPIN_RESET_BTN) {
@@ -269,6 +273,14 @@ void statusLed() {
   }
 }
 
+void serialize() {
+    if(!ninkasi.running()) {
+        return;
+    }
+
+    ninkasi.serialize(1);
+}
+
 void setup() {
   Serial.begin(115200);
   ninkasi.begin();
@@ -296,6 +308,7 @@ void setup() {
 
   timer.setInterval(3000L, sendBlynkData);
   timerLed.attach(0.5, statusLed);
+  timerSerialize.attach(10, serialize);
 }
 
 void loop() {
@@ -314,5 +327,6 @@ void loop() {
     millisResetBtn = 0;
     Blynk.setProperty(VPIN_RESET_BTN, "onBackColor", BLYNK_GREEN);
     ninkasi.reset();
+    serialize();
   }
 }
