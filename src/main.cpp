@@ -3,6 +3,7 @@
 #include <ESP8266WiFi.h>
 #include <BlynkSimpleEsp8266.h>
 #include <WiFiManager.h>
+#include <EEPROM.h>
 
 #include <Arduino.h>
 #include <ArduinoOTA.h>
@@ -40,6 +41,7 @@ WidgetLED ledImpeller(VPIN_LED_IMPELLER);
 WidgetLED ledPump(VPIN_LED_PUMP);
 
 uint32_t millisResetBtn = 0;
+uint8_t version = '1';
 
 // WiFi AP credentials.
 char ssid[] = "ninkasi";
@@ -269,7 +271,20 @@ void statusLed() {
 
 void setup() {
   Serial.begin(115200);
+  ninkasi.begin();
 
+  // read EEPROM data
+  EEPROM.begin(512);
+  uint8_t v = 0;
+  EEPROM.get(0, v);
+
+  if(v == version) {
+    Serial.print("reading configuration from EEPROM (Version ");
+    Serial.print((char)version);
+    Serial.println(")");
+    ninkasi.deserialize(1);
+  }
+ 
   pinMode(PIN_LED, OUTPUT);
   digitalWrite(PIN_LED, HIGH);
 
@@ -278,8 +293,6 @@ void setup() {
 
   ArduinoOTA.setHostname(hostname);
   ArduinoOTA.begin();
-
-  ninkasi.begin();
 
   timer.setInterval(3000L, sendBlynkData);
   timerLed.attach(0.5, statusLed);

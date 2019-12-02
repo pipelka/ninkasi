@@ -38,6 +38,10 @@ public:
 
     void setSensorIndex(uint8_t index);
 
+    int serialize(int addr);
+
+    int deserialize(int addr);
+
 protected:
 
     void clear();

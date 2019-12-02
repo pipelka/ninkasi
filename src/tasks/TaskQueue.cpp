@@ -1,4 +1,5 @@
 #include "TaskQueue.h"
+#include <EEPROM.h>
 
 TaskQueue::TaskQueue(uint8_t sw, SensorBus* sensors, RelayBus* relay) {
     m_sw = sw;
@@ -94,4 +95,26 @@ void TaskQueue::setSensorIndex(uint8_t index) {
             t->m_atom.sensor = index;
         }
     }
+}
+
+int TaskQueue::serialize(int addr) {
+    EEPROM.put(addr, m_sw);
+    addr += sizeof(m_sw);
+
+    for(int i = 0; i < 12; i++) {
+        addr = m_tasks[i]->serialize(addr);
+    }
+
+    return addr;
+}
+
+int TaskQueue::deserialize(int addr) {
+    EEPROM.get(addr, m_sw);
+    addr += sizeof(m_sw);
+
+    for(int i = 0; i < 12; i++) {
+        addr = m_tasks[i]->deserialize(addr);
+    }
+
+    return addr;
 }

@@ -1,4 +1,5 @@
 #include "Task.h"
+#include <EEPROM.h>
 
 void Task::begin() {
     m_startMillis = millis();
@@ -62,7 +63,14 @@ void Task::switchOn(bool on, bool force) {
     m_atom.sw_on = on;
 }
 
-void Task::serialize() {
+int Task::serialize(int addr) {
+    EEPROM.put(addr, m_atom);
+    return addr + sizeof(m_atom);
+}
+
+int Task::deserialize(int addr) {
+    EEPROM.get(addr, m_atom);
+    return addr + sizeof(m_atom);
 }
 
 void Task::setTargetTempC(uint8_t tempC) {

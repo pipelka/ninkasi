@@ -1,5 +1,6 @@
 #include "Ninkasi.h"
 #include "vpins.h"
+#include <EEPROM.h>
 
 Ninkasi::Ninkasi(SensorBus* sensors, RelayBus* relay) : 
 m_sensors(sensors), 
@@ -130,4 +131,24 @@ void Ninkasi::reset() {
     stop();
     m_mash.clear();
     m_boil.clear();
+}
+
+int Ninkasi::serialize(int addr) {
+    uint8_t port = m_relay->getCache();
+    EEPROM.put(addr, port);
+    addr += sizeof(port);
+
+    addr = m_mash.serialize(addr);
+    return m_boil.serialize(addr);
+}
+
+int Ninkasi::deserialize(int addr) {
+    uint8_t port = 0;
+    EEPROM.get(addr,port);
+    addr += sizeof(port);
+
+    m_relay->setPort(port);
+
+    addr = m_mash.deserialize(addr);
+    return m_boil.deserialize(addr);
 }

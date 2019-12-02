@@ -37,6 +37,10 @@ public:
 
     void clear();
 
+    int serialize(int addr);
+
+    int deserialize(int addr);
+
 private:
 
     SensorBus* m_sensors;

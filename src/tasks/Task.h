@@ -19,15 +19,17 @@ struct TaskAtom {
     uint8_t sensor:3;
     uint8_t greater:1;
     uint8_t on:1;
+
     uint8_t sw:3;
     uint8_t sw_on:1;
     uint8_t empty:1;
     uint8_t reserved:2;
     uint8_t done:1;
+
     uint8_t elapsed{0};
     uint8_t holdTime{0};
     uint8_t targetTemp{0};
-};
+} __attribute__((packed));
 
 class Task {
 public:
@@ -96,7 +98,9 @@ public:
 
     void switchOn(bool on, bool force = false);
 
-    void serialize();
+    int serialize(int addr);
+
+    int deserialize(int addr);
 
 protected:
 

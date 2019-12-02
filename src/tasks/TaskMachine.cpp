@@ -1,4 +1,5 @@
 #include "TaskMachine.h"
+#include <EEPROM.h>
 
 TaskMachine::TaskMachine(uint8_t queueCount, SensorBus* sensors, RelayBus* relais) : m_timer(500), m_queueCount(queueCount) {
     m_queue = new TaskQueue*[m_queueCount];
@@ -112,4 +113,26 @@ uint8_t TaskMachine::getRemainingTime()  {
     }
 
     return t->remaining();
+}
+
+int TaskMachine::serialize(int addr) {
+    EEPROM.put(addr, m_running);
+    addr += sizeof(m_running);
+
+    for(int i = 0; i < m_queueCount; i++) {
+        addr = m_queue[i]->serialize(addr);
+    }
+
+    return addr;
+}
+
+int TaskMachine::deserialize(int addr) {
+    EEPROM.get(addr, m_running);
+    addr += sizeof(m_running);
+
+    for(int i = 0; i < m_queueCount; i++) {
+        addr = m_queue[i]->deserialize(addr);
+    }
+
+    return addr;
 }
