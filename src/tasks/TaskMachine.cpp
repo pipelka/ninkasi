@@ -116,7 +116,10 @@ uint8_t TaskMachine::getRemainingTime()  {
 }
 
 int TaskMachine::serialize(int addr) {
+    Serial.print("write taskmachine operational status ... ");
     EEPROM.put(addr, m_running);
+    Serial.println("done");
+    
     addr += sizeof(m_running);
 
     for(int i = 0; i < m_queueCount; i++) {

@@ -64,7 +64,13 @@ void Task::switchOn(bool on, bool force) {
 }
 
 int Task::serialize(int addr) {
+    Serial.print("write task atom configuration @0x");
+    Serial.print((int)addr, HEX);
+    Serial.print(" ... ");
+
     EEPROM.put(addr, m_atom);
+
+    Serial.println("done");
     return addr + sizeof(m_atom);
 }
 

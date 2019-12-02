@@ -98,11 +98,20 @@ void TaskQueue::setSensorIndex(uint8_t index) {
 }
 
 int TaskQueue::serialize(int addr) {
+    Serial.print("write taskqueue relay configuration (relay ");
+    Serial.print((int)m_sw);
+    Serial.print(") ... ");
+
     EEPROM.put(addr, m_sw);
+    Serial.println("done");
+
     addr += sizeof(m_sw);
 
     for(int i = 0; i < 12; i++) {
-        addr = m_tasks[i]->serialize(addr);
+        Task* task = m_tasks[i];
+        if(task != nullptr) {
+            addr = task->serialize(addr);
+        }
     }
 
     return addr;
@@ -113,7 +122,10 @@ int TaskQueue::deserialize(int addr) {
     addr += sizeof(m_sw);
 
     for(int i = 0; i < 12; i++) {
-        addr = m_tasks[i]->deserialize(addr);
+        Task* task = m_tasks[i];
+        if(task != nullptr) {
+            addr = m_tasks[i]->deserialize(addr);
+        }
     }
 
     return addr;

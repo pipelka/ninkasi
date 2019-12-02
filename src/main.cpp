@@ -57,7 +57,7 @@ const char* domain = "192.168.16.10";
 uint16_t port = 8080;
 
 void updateBlynkLedAndButtonStatus();
-void serialize();
+void serialize(bool force = false);
 
 
 BLYNK_CONNECTED() {
@@ -183,7 +183,7 @@ BLYNK_WRITE(VPIN_START_MASH_BTN) {
   }
 
   updateBlynkLedAndButtonStatus();
-  serialize();
+  serialize(true);
 }
 
 BLYNK_WRITE(VPIN_START_BOIL_BTN) {
@@ -198,7 +198,7 @@ BLYNK_WRITE(VPIN_START_BOIL_BTN) {
   }
 
   updateBlynkLedAndButtonStatus();
-  serialize();
+  serialize(true);
 }
 
 BLYNK_WRITE(VPIN_RESET_BTN) {
@@ -273,12 +273,14 @@ void statusLed() {
   }
 }
 
-void serialize() {
-    if(!ninkasi.running()) {
+void serialize(bool force) {
+    if(!ninkasi.running() && !force) {
         return;
     }
 
+    EEPROM.put(0, version);
     ninkasi.serialize(1);
+    EEPROM.commit();
 }
 
 void setup() {
@@ -308,7 +310,7 @@ void setup() {
 
   timer.setInterval(3000L, sendBlynkData);
   timerLed.attach(0.5, statusLed);
-  timerSerialize.attach(10, serialize);
+  timerSerialize.attach(30, serialize, false);
 }
 
 void loop() {

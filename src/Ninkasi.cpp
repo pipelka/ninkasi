@@ -134,8 +134,13 @@ void Ninkasi::reset() {
 }
 
 int Ninkasi::serialize(int addr) {
+    Serial.println("serialiting system status ...");
     uint8_t port = m_relay->getCache();
+
+    Serial.print("write relay status ... ");
     EEPROM.put(addr, port);
+    Serial.println("done");
+
     addr += sizeof(port);
 
     addr = m_mash.serialize(addr);
