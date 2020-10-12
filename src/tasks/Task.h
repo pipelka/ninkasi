@@ -46,35 +46,35 @@ public:
 
     uint32_t millisSinceStart();
 
-    inline uint8_t type() {
+    inline uint8_t type() const {
         return m_atom.type;
     }
 
-    inline uint8_t sensor() {
+    inline uint8_t sensor() const {
         return m_atom.sensor;
     }
 
-    inline uint8_t on() {
+    inline uint8_t on() const {
         return m_atom.on;
     }
 
-    inline uint8_t targetTempC() {
+    inline uint8_t targetTempC() const {
         return m_atom.targetTemp;
     }
     
-    inline uint8_t holdTime() {
+    inline uint8_t holdTime() const {
         return m_atom.holdTime;
     }
 
-    inline bool empty() {
+    inline bool empty() const {
         return (m_atom.empty == 1);
     }
 
-    inline bool started() {
+    inline bool started() const {
         return (m_startMillis != 0);
     }
 
-    inline bool done() {
+    inline bool done() const {
         return (m_atom.done == 1);
     }
 
@@ -82,13 +82,13 @@ public:
         return (m_atom.sw_on);
     }
 
-    virtual uint8_t remaining();
+    virtual uint8_t remaining() const;
 
     inline void stop() {
         m_startMillis = 0;
     }
 
-    inline uint8_t elapsed() {
+    inline uint8_t elapsed() const {
         return m_atom.elapsed;
     }
 

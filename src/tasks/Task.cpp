@@ -89,6 +89,6 @@ void Task::setHoldTime(uint8_t minutes) {
         m_atom.holdTime = minutes;
 }
 
-uint8_t Task::remaining() {
+uint8_t Task::remaining() const {
     return 0;
 }
