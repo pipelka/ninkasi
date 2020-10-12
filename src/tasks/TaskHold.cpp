@@ -40,7 +40,7 @@ void TaskHold::loop() {
     Serial.print((int)remaining());
     Serial.println(" minutes left");
 
-    float temp = m_sensors->getTemp(m_atom.sensor);
+    float temp = this->temp();
 
     if(temp <= (float)m_atom.targetTemp - 1) {
         switchOn(m_atom.on);
@@ -51,6 +51,10 @@ void TaskHold::loop() {
     }
 }
 
-uint8_t TaskHold::remaining() {
+float TaskHold::temp() const {
+    return m_sensors->getTemp(m_atom.sensor);
+}
+
+uint8_t TaskHold::remaining() const {
     return m_atom.holdTime - m_atom.elapsed;
 }
