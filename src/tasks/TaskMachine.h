@@ -3,6 +3,7 @@
 #include "TaskQueue.h"
 #include "TaskRamp.h"
 #include "TaskHold.h"
+#include "TaskHoldStir.h"
 
 #include "RelayBus.h"
 #include "SensorBus.h"
