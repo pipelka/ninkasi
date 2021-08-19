@@ -1,3 +1,4 @@
+#pragma once
 #include "Task.h"
 
 class TaskHold : public Task {
@@ -12,6 +13,10 @@ public:
     uint8_t remaining() const override;
 
 protected:
+
+    bool shouldStop();
+
+    bool shouldStart();
 
     float temp() const;
 };

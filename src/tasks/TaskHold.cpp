@@ -40,15 +40,21 @@ void TaskHold::loop() {
     Serial.print((int)remaining());
     Serial.println(" minutes left");
 
-    float temp = this->temp();
-
-    if(temp <= (float)m_atom.targetTemp - 1) {
+    if(shouldStart()) {
         switchOn(m_atom.on);
     }
 
-    if(temp >= (float)m_atom.targetTemp - 0.5) {
+    if(shouldStop()) {
         switchOn(!m_atom.on);
     }
+}
+
+bool TaskHold::shouldStop() {
+    return (this->temp() >= (float)m_atom.targetTemp - 0.5);
+}
+
+bool TaskHold::shouldStart() {
+    return (this->temp() <= (float)m_atom.targetTemp - 1);
 }
 
 float TaskHold::temp() const {
