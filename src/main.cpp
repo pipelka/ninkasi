@@ -54,8 +54,8 @@ const char* hostname = "ninkasi";
 
 // Blynk Project Settings
 char auth[] = "2e265805660d4814842adf80ccd7690a";
-const char* domain = "192.168.16.10";
-uint16_t port = 8080;
+const char* domain = "192.168.16.12";
+uint16_t port = 9080;
 
 void updateBlynkLedAndButtonStatus();
 void serialize(bool force = false);
@@ -143,12 +143,12 @@ BLYNK_WRITE_DEFAULT() {
     }
   }
 
-  if(request.pin == VPIN_BTN_AUX) {
+  if(request.pin == VPIN_BTN_BOIL) {
     if(param.asInt() == 0) {
-      relayBus.delSingle(bit(RELAY_AUX));
+      relayBus.delSingle(bit(RELAY_BOIL));
     }
     else {
-      relayBus.setSingle(bit(RELAY_AUX));
+      relayBus.setSingle(bit(RELAY_BOIL));
     }
   }
 
@@ -239,7 +239,7 @@ void updateBlynkLedAndButtonStatus() {
 
   sendRelayStatus(VPIN_BTN_HEATING, RELAY_HEATING, &ledHeating);
   sendRelayStatus(VPIN_BTN_IMPELLER, RELAY_IMPELLER, &ledImpeller);
-  sendRelayStatus(VPIN_BTN_AUX, RELAY_AUX);
+  sendRelayStatus(VPIN_BTN_BOIL, RELAY_BOIL);
   sendRelayStatus(VPIN_BTN_PUMP, RELAY_PUMP, &ledPump);
 
   sendRelayStatus(VPIN_RELAY_MAN1, RELAY_MAN1);
