@@ -15,16 +15,20 @@ Ninkasi::~Ninkasi() {
 }
 
 void Ninkasi::begin() {
+    // ninkasi machine definitions
+
+    // mash steps
     for(int i = 0; i < 6; i++) {
         uint8_t pos =  i* 2;
-        m_mash.Q(0).setTask<TaskRamp>(pos)->ramp(0);
-        m_mash.Q(1).setTask<TaskRamp>(pos)->ramp(0);
-        m_mash.Q(0).setTask<TaskHold>(pos + 1)->hold(0);
-        m_mash.Q(1).setTask<TaskHold>(pos + 1)->hold(0);
+        m_mash.Q(RELAY_IMPELLER).setTask<TaskRamp>(pos)->ramp(TEMP_PROBE1);
+        m_mash.Q(RELAY_HEATING).setTask<TaskRamp>(pos)->ramp(TEMP_PROBE1);
+        m_mash.Q(RELAY_IMPELLER).setTask<TaskHoldStir>(pos + 1)->hold(TEMP_PROBE1);
+        m_mash.Q(RELAY_HEATING).setTask<TaskHold>(pos + 1)->hold(TEMP_PROBE1);
     }
 
-    m_boil.Q(1).setTask<TaskRamp>(0)->ramp(0);
-    m_boil.Q(1).setTask<TaskHold>(1)->hold(0);
+    // boil machine step
+    m_boil.Q(RELAY_BOIL).setTask<TaskRamp>(0)->ramp(TEMP_PROBE2);
+    m_boil.Q(RELAY_BOIL).setTask<TaskHold>(1)->hold(TEMP_PROBE2);
 
     m_mash.begin();
     m_boil.begin();
@@ -55,21 +59,21 @@ void Ninkasi::setMashStep(uint8_t step, float temp, int duration) {
 
 void Ninkasi::setBoil(float temp, int duration) {
     if(duration != -1) {
-        m_boil.Q(RELAY_HEATING)[1]->setHoldTime(duration);
+        m_boil.Q(RELAY_BOIL)[1]->setHoldTime(duration);
     }
 
     if(temp != -1) {
-        m_boil.Q(RELAY_HEATING)[0]->setTargetTempC(temp);
-        m_boil.Q(RELAY_HEATING)[1]->setTargetTempC(temp);
+        m_boil.Q(RELAY_BOIL)[0]->setTargetTempC(temp);
+        m_boil.Q(RELAY_BOIL)[1]->setTargetTempC(temp);
     }
 }
 
 void Ninkasi::setBoilSwitchRelay(uint8_t sw) {
-    m_boil.Q(RELAY_HEATING).setSwitchRelay(sw);
+    m_boil.Q(RELAY_BOIL).setSwitchRelay(sw);
 }
 
 void Ninkasi::setBoilSensorIndex(uint8_t index) {
-    m_boil.Q(RELAY_HEATING).setSensorIndex(index);
+    m_boil.Q(RELAY_BOIL).setSensorIndex(index);
 }
 
 void Ninkasi::startMash() {
