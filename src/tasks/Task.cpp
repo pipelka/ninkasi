@@ -8,6 +8,10 @@ void Task::begin() {
 }
 
 void Task::loop() {
+    if(m_atom.done) {
+        return;
+    }
+
     if(m_atom.targetTemp != 0) {
         float temp = m_sensors->getTemp(m_atom.sensor);
 
@@ -16,6 +20,11 @@ void Task::loop() {
         Serial.print(" - ");
         Serial.print(temp);
         Serial.println("C");
+    }
+
+    if(millisSinceStart() >= 60 * 1000) {
+        m_atom.elapsed++;
+        Task::begin();
     }
 }
 
