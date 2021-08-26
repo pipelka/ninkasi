@@ -25,7 +25,7 @@
 #define VPIN_BOIL_WHIRLPOOL     V22
 
 #define VPIN_BTN_HEATING        V26
-#define VPIN_BTN_AUX            V27
+#define VPIN_BTN_BOIL           V27
 #define VPIN_BTN_IMPELLER       V28
 #define VPIN_BTN_PUMP           V29
 
@@ -50,9 +50,12 @@
 
 #define RELAY_IMPELLER 0
 #define RELAY_HEATING 1
-#define RELAY_AUX 2
+#define RELAY_BOIL 2
 #define RELAY_PUMP 3
 #define RELAY_MAN1 4
 #define RELAY_MAN2 5
 #define RELAY_MAN3 6
 #define RELAY_MAN4 7
+
+#define TEMP_PROBE1 0
+#define TEMP_PROBE2 1
