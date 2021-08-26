@@ -32,11 +32,6 @@ void TaskHold::loop() {
         return;
     }
 
-    if(millisSinceStart() >= 60 * 1000) {
-        m_atom.elapsed++;
-        Task::begin();
-    }
-
     Serial.print((int)remaining());
     Serial.println(" minutes left");
 
