@@ -1,8 +1,5 @@
 #include "Ninkasi.h"
 #include "vpins.h"
-#include <EEPROM_Rotate.h>
-
-extern EEPROM_Rotate EEPROM;
 
 Ninkasi::Ninkasi(SensorBus* sensors, RelayBus* relay) : 
 m_sensors(sensors), 
@@ -140,7 +137,7 @@ void Ninkasi::reset() {
 }
 
 int Ninkasi::serialize(int addr) {
-    Serial.println("serialiting system status ...");
+    /*Serial.println("serializing system status ...");
     uint8_t port = m_relay->getCache();
 
     Serial.print("write relay status ... ");
@@ -150,16 +147,18 @@ int Ninkasi::serialize(int addr) {
     addr += sizeof(port);
 
     addr = m_mash.serialize(addr);
-    return m_boil.serialize(addr);
+    return m_boil.serialize(addr);*/
+    return 0;
 }
 
 int Ninkasi::deserialize(int addr) {
-    uint8_t port = 0;
+    /*uint8_t port = 0;
     EEPROM.get(addr,port);
     addr += sizeof(port);
 
     m_relay->setPort(port);
 
     addr = m_mash.deserialize(addr);
-    return m_boil.deserialize(addr);
+    return m_boil.deserialize(addr);*/
+    return 0;
 }
