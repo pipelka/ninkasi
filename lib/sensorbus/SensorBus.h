@@ -31,9 +31,9 @@ private:
 
     DeviceAddress m_thermometer[8];
 
-    float m_temperature[8]{};
+    float m_temperature[8]{0.0};
 
-    uint32_t m_lastTempRequest{0};
+    unsigned long m_lastTempRequest{0};
 
     unsigned int m_measureIntervalMs = 1000;
 

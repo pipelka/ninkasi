@@ -27,7 +27,7 @@ void SensorBus::loop() {
         return;
     }
 
-    auto ms = (unsigned long)m_sensors.millisToWaitForConversion(m_sensors.getResolution());
+    unsigned long ms = m_sensors.millisToWaitForConversion(m_sensors.getResolution());
 
     if(millis() - m_lastTempRequest <= ms) {
         return;
@@ -35,8 +35,23 @@ void SensorBus::loop() {
 
     if(m_sensors.isConversionComplete()) {
         for(int i = 0; i < getDeviceCount(); i++) {
-            m_temperature[i] = m_sensors.getTempC(m_thermometer[i]);
+            float temp = m_sensors.getTempC(m_thermometer[i]);
+
+            // invalid temp - skip
+            if(temp == DEVICE_DISCONNECTED_C) {
+                continue;
+            }
+
+            // first temp - set
+            if(m_temperature[i] == 0) {
+                m_temperature[i] = temp;
+                continue;
+            }
+
+            // sample temp by 2 values
+            m_temperature[i] = (m_temperature[i] + temp) / 2;
         }
+
         m_requesting = false;
     }
 
