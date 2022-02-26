@@ -19,4 +19,11 @@ protected:
     bool shouldStart();
 
     float temp() const;
+
+private:
+
+    float m_hysteresis{0.5};
+
+    bool m_cooling{false};
+
 };

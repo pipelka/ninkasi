@@ -45,7 +45,7 @@ void TaskRamp::loop() {
 
     // switch off when done
     if(m_atom.done) {
-        switchOn(!m_atom.on, true);
+        switchOn(!m_atom.on);
     }
 }
 

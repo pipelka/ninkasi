@@ -10,7 +10,7 @@ void TaskHoldStir::loop() {
     uint8_t e = elapsed();
 
     // check if we should start the stir (every 'stir interval' minutes)
-    if((e % m_stirInterval) == 0 && !isSwitchOn() && e > 0 && m_stirStart == 0) {
+    if((e % m_stirInterval) == 0 && e > 0 && m_stirStart == 0) {
         m_stirStart = e;
         switchOn(on());
         return;
@@ -19,11 +19,6 @@ void TaskHoldStir::loop() {
     // stop stirring after a minute
     if(e >= m_stirStart + 1 && m_stirStart != 0) {
         m_stirStart = 0;
-
-        if(shouldStop()) {
-            switchOn(!on());
-            return;
-        }
     }
 
     // business as usual when not stirring

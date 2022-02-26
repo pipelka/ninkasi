@@ -1,7 +1,4 @@
 #include "TaskQueue.h"
-#include <EEPROM_Rotate.h>
-
-extern EEPROM_Rotate EEPROM;
 
 TaskQueue::TaskQueue(uint8_t sw, SensorBus* sensors, RelayBus* relay) {
     m_sw = sw;
@@ -100,7 +97,7 @@ void TaskQueue::setSensorIndex(uint8_t index) {
 }
 
 int TaskQueue::serialize(int addr) {
-    Serial.print("write taskqueue relay configuration (relay ");
+    /*Serial.print("write taskqueue relay configuration (relay ");
     Serial.print((int)m_sw);
     Serial.print(") ... ");
 
@@ -116,11 +113,12 @@ int TaskQueue::serialize(int addr) {
         }
     }
 
-    return addr;
+    return addr;*/
+    return 0;
 }
 
 int TaskQueue::deserialize(int addr) {
-    EEPROM.get(addr, m_sw);
+    /*EEPROM.get(addr, m_sw);
     addr += sizeof(m_sw);
 
     for(int i = 0; i < 12; i++) {
@@ -130,5 +128,6 @@ int TaskQueue::deserialize(int addr) {
         }
     }
 
-    return addr;
+    return addr;*/
+    return 0;
 }

@@ -16,7 +16,7 @@ void TaskHold::begin() {
         return;
     }
 
-    switchOn(!m_atom.on, true);
+    switchOn(!m_atom.on, true); // TODO - do we need to force the switch ?
 }
 
 void TaskHold::loop() {
@@ -27,7 +27,7 @@ void TaskHold::loop() {
     }
 
     if(m_atom.elapsed >= m_atom.holdTime) {
-        switchOn(!m_atom.on, true);
+        switchOn(!m_atom.on);
         m_atom.done = true;
         return;
     }
@@ -38,18 +38,25 @@ void TaskHold::loop() {
     if(shouldStart()) {
         switchOn(m_atom.on);
     }
-
-    if(shouldStop()) {
+    else if(shouldStop()) {
         switchOn(!m_atom.on);
     }
 }
 
 bool TaskHold::shouldStop() {
-    return (this->temp() >= (float)m_atom.targetTemp - 0.5);
+    if(m_cooling) {
+        return (this->temp() <= (float)m_atom.targetTemp + m_hysteresis);
+    }
+
+    return (this->temp() >= (float)m_atom.targetTemp - m_hysteresis);
 }
 
 bool TaskHold::shouldStart() {
-    return (this->temp() <= (float)m_atom.targetTemp - 1);
+    if(m_cooling) {
+        return (this->temp() >= (float)m_atom.targetTemp + m_hysteresis * 2);
+    }
+
+    return (this->temp() <= (float)m_atom.targetTemp - m_hysteresis * 2);
 }
 
 float TaskHold::temp() const {
